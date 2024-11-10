@@ -13,13 +13,30 @@ abstract class BankCard {
      */
     protected double cashBackBalance;
     /**
+     * Поле лимита суммы за которую начисляется кэшбэк
+     */
+    protected double cashBackPaymentLimit;
+    /**
+     * Размер кэшбэка
+     */
+
+    protected double cashBackAmount;
+    /**
      * Поле бонусного баланса
      */
     protected double bonusBalance;
     /**
+     * Размер начисляемого бонуса
+     */
+    protected double bonusAmount;
+    /**
      * Поле баланса накоплений
      */
     protected double savingsBalance;
+    /**
+     * Доля начисляемых накоплений
+     */
+    private double savingAmount;
 
     /**
      * Метод для проведения платежа по карте
@@ -75,12 +92,11 @@ abstract class BankCard {
      *
      * @param amount - сумма платежа
      */
-//    Значение процента бонуса и кэшбэка зашито в формулу, поскольку по ТЗ указаны неизменными,
-//     но кажется лучше вынести в поля.
-    protected void cashingBack(double amount) {
-        bonusBalance = bonusBalance + (amount * 0.01);
-        if (amount > 5000000) {
-            cashBackBalance = cashBackBalance + (amount * 0.05);
+
+    protected void cashingBack(double amount, double bonusAmount, double cashBackAmount, double cashBackPaymentLimit) {
+        bonusBalance = bonusBalance + (amount * bonusAmount);
+        if (amount > cashBackPaymentLimit) {
+            cashBackBalance = cashBackBalance + (amount * cashBackAmount);
         }
         System.out.println("You received cashback or bonuses");
 
@@ -91,11 +107,10 @@ abstract class BankCard {
      *
      * @param amount - сумма пополнения
      */
-//    Значение размера накопления зашито в формулу, поскольку по ТЗ указано неизменным,
-//    но кажется лучше вынести в поля.
-    protected void saving(double amount) {
 
-        savingsBalance = savingsBalance + (amount * 0.00005);
+    protected void saving(double amount, double savingAmount) {
+
+        savingsBalance = savingsBalance + (amount * savingAmount);
         System.out.println("You received savings");
     }
 }
