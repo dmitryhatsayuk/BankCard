@@ -1,51 +1,43 @@
 package ru.alfa;
 
-/**
- * Клас кредитной карты с бонусными опциями в виде накоплений
- */
 public class BonusCreditCard extends CreditCard {
-final private double savingAmount = 0.00001;
+    //карта с бонусами и кэшбэком
+    private double bonusAccount;
+    private double cashBackAccount;
 
-    /**
-     * Метод для пополнения кредитной карты с бонусными опциями.
-     * Переопределен от метода стандартной кредитной карты.
-     *
-     * @param amount - значение суммы пополнения
-     * @return возвращает true в случае успешного пополнения
-     */
     @Override
-    public boolean upBalance(double amount) {
-
-        if (amount > 0) {
-            if (creditBalance + amount > limit) {
-                balance = balance + amount - (limit - creditBalance);
-                creditBalance = limit;
-                System.out.println("Credit card successfully top up for " + amount);
-                saving(amount,savingAmount);
-                return true;
-            } else if (creditBalance + amount <= limit) {
-                creditBalance = creditBalance + amount;
-                System.out.println("Credit card successfully top up for " + amount);
-                saving(amount,savingAmount);
-                return true;
-            } else {
-                System.out.println("Up balance failed");
-                return false;
-            }
-        } else {
-            System.out.println("Up balance failed");
+    //переопределим только метод оплаты, поскольку две бонусные программы касаются только его
+    public boolean pay(double amount) {
+        if (!canPay(amount)) {
             return false;
         }
-
+        if (debitAccount >= amount) {
+            debitAccount -= amount;
+            cashingBackFive(amount);
+            bonusingOne(amount);
+            return true;
+        }
+        creditAccount = getBalance() - amount;
+        cashingBackFive(amount);
+        bonusingOne(amount);
+        return true;
     }
 
     @Override
-    public void showInfo() {
-        System.out.println("*** This is a Credit card with bonuses! ***" +
-                "\nDebit balance:" + balance +
-                "\nCard limit: " + limit +
-                "\nCredit balance: " + creditBalance + "\nSaving balance: " + savingsBalance);
+    public String info() {
+        return "Debit Account: " + debitAccount + "\nCredit Account: " + creditAccount + "\nBonus Account: " + bonusAccount + "\nCashBack: " + cashBackAccount;
     }
 
+    //можно конечно задавать значения в полях, но кажется у каждой бонусной программы будет своя логика
+    private void bonusingOne(double amount) {
+        //проверки на не отрицательность доверим вышестоящим методам
+        bonusAccount = bonusAccount + amount * 0.01;
+    }
+
+    private void cashingBackFive(double amount) {
+        if (amount > 5000000) {
+            cashBackAccount = cashBackAccount + amount * 0.05;
+        }
+    }
 
 }

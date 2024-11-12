@@ -1,113 +1,84 @@
 package ru.alfa;
 
-/**
- * Клас кредитной карты
- */
 public class CreditCard extends BankCard {
-    /**
-     * Поле значения кредитного лимита
-     */
-    protected double limit;
-    /**
-     * Поле значения кредитного баланса
-     */
-    protected double creditBalance;
 
-    /**
-     * Сеттер для задания кредитного лимита
-     *
-     * @param limit значение лимита
-     * @return возвращает true в случае успешного назначения лимита
-     */
-    public boolean setLimit(double limit) {
-        if (limit >= 0) {
-            this.limit = limit;
-            System.out.println("Limit set to " + limit);
-            return true;
-        } else {
-            System.out.println("Limit setting failed");
+    protected double debitAccount;
+    protected double creditAccount;
+    protected double creditLimit;
+
+    //если есть долг, то его нужно учесть при назначении нового значения кредитного счета,
+// но и больше лимита делать нельзя. Также банк моет установить нулевой лимит-логика продолжит работать
+    public boolean setCreditAccount(double amount) {
+        if (amount > creditLimit) {
             return false;
         }
+        creditAccount = (creditLimit - creditAccount) + amount;
+        return true;
     }
 
-    /**
-     * Сеттер для задания кредитного баланса.
-     * Изначально планировалось задавать баланс равный лимиту при создании карты,
-     * но исходя из ТЗ они задаются отдельно.
-     *
-     * @param creditBalance значение баланса
-     * @return возвращает true в случае успешного задания баланса
-     */
-    public boolean setCreditBalance(double creditBalance) {
-        if (creditBalance >= 0) {
-            this.creditBalance = creditBalance;
-            System.out.println("Credit balance set to " + creditBalance);
-            return true;
-        } else {
-            System.out.println("Credit balance setting failed");
+    // если мы меняем лимит, то на такую же сумму должно меняться значение кредитного счета
+    // при этом лимит может стать меньше долга и логика везде должна работать
+    public boolean setCreditLimit(double amount) {
+        if (creditLimit < 0) {
             return false;
         }
+        creditAccount = creditAccount + (amount - creditLimit);
+        creditLimit = amount;
+        return true;
     }
 
+    //менять сумму дебетовых средств можно только если погашены все долги
+    //при нулевом лимите и отрицательном уровне кредитных средств тоже работает
+    // (случай когда тебе банк больше не дает в долг, но ты еще должен ему)
+    public boolean setDebitAccount(double amount) {
+        if (amount< 0||creditLimit>creditAccount ) {
+            return false;
+        }
+        debitAccount = amount;
+        return true;
+    }
     @Override
-    public void showInfo() {
-        System.out.println("*** This is a Credit card ***" + "\nDebit balance:" + balance + "\nCard limit: " + limit + "\nCredit balance: " + creditBalance);
+    //в этом методе нам нужно показать все доступные денежки, поскольку баланс это количество и тех и других
+    public double getBalance() {
+        return debitAccount + creditAccount;
     }
 
-    /**
-     * Метод для проведения платежа по кредитной карте.
-     * Переопределяет метод абстрактной карты, позволяя использовать кредитный баланс.
-     *
-     * @param amount - значение суммы платежа
-     * @return возвращает true в случае успешного списания средств
-     */
     @Override
     public boolean pay(double amount) {
-        if (amount > 0) {
-            if (balance - amount >= 0) {
-                balance = balance - amount;
-                System.out.println("Credit card payed " + amount);
-                return true;
-            } else if (creditBalance + (balance - amount) >= 0) {
-                creditBalance = creditBalance + (balance - amount);
-                balance = 0;
-                System.out.println("Credit card payed " + amount);
-                return true;
-            } else {
-                System.out.println("Credit card pay failed");
-                return false;
-            }
-        } else {
-            System.out.println("Credit card pay failed");
+        //если всех своих и кредитных денег не хватает то, извините
+        if (!canPay(amount)) {
             return false;
         }
-
+        //если хватает своих то тратим только их
+        if (debitAccount >= amount) {
+            debitAccount -= amount;
+            return true;
+        }
+        //в остальных случаях берем с кредитного счета ровно столько сколько не хватило на свои деньги
+        creditAccount = getBalance() - amount;
+        return true;
     }
 
-    /**
-     * Метод для пополнения стандартной кредитной карты.
-     *
-     * @param amount - значение суммы пополнения
-     * @return возвращает true в случае успешного пополнения
-     */
-    public boolean upBalance(double amount) {
-        if (amount > 0) {
-            if (creditBalance + amount > limit) {
-                balance = balance + amount - (limit - creditBalance);
-                creditBalance = limit;
-                System.out.println("Credit card successfully top up for " + amount);
-                return true;
-            } else if (creditBalance + amount <= limit) {
-                creditBalance = creditBalance + amount;
-                System.out.println("Credit card successfully top up for " + amount);
-                return true;
-            } else {
-                System.out.println("Up balance failed");
-                return false;
-            }
-        } else {
-            System.out.println("Up balance failed");
+    @Override
+    public boolean fill(double amount) {
+        if (amount < 0) {
             return false;
         }
+        //если платеж не покрывает весь долг, то просто кладем все на кредитный
+        if (creditLimit - creditAccount >= amount) {
+            creditAccount += amount;
+        }
+//если покрывает (даже если мы не тратили кредитные), то кидаем на дебетовый счет все что не скушал кредитный,
+//а кредитный становится равен лимиту
+        else {
+            debitAccount = debitAccount + amount - (creditLimit - creditAccount);
+            creditAccount = creditLimit;
+        }
+        return true;
+    }
+
+    @Override
+    public String info() {
+        return " Debit Account: " + debitAccount + " Credit Account: " + creditAccount;
     }
 }

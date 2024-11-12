@@ -1,31 +1,37 @@
 package ru.alfa;
 
-/**
- * Клас простой дебетовой карты
- */
 public class DebitCard extends BankCard {
+    protected double debitAccount;
+
+    public void setDebitAccount(double amount) {
+        this.debitAccount = amount;
+    }
 
     @Override
-    public void showInfo() {
-        System.out.println("*** This is a Debit card*** \n" + " Balance: " + balance);
+    public double getBalance() {
+        return debitAccount;
     }
 
-    /**
-     * Метод для пополнения стандартной дебетовой карты.
-     *
-     * @param amount - значение суммы пополнения
-     * @return возвращает true в случае успешного пополнения
-     */
-    public boolean upBalance(double amount) {
-        if (amount > 0) {
-            balance = balance + amount;
-            System.out.println("Balance top up successfully for " + amount);
-            return true;
-        } else {
-            System.out.println("Up balance failed");
+    @Override
+    public boolean pay(double amount) {
+        if (!canPay(amount)) {
             return false;
         }
+        debitAccount -= amount;
+        return true;
     }
 
+    @Override
+    public boolean fill(double amount) {
+        if (amount < 0) {
+            return false;
+        }
+        debitAccount += amount;
+        return true;
+    }
 
+    @Override
+    public String info() {
+        return "Balance: " + debitAccount;
+    }
 }

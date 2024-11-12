@@ -1,58 +1,30 @@
 package ru.alfa;
 
-/**
- * Клас дебетовой карты с бонусными опциями в виде кэшбэка, бонусов и накоплений
- */
+//карта с бонусной программой в виде накоплений
 public class BonusDebitCard extends DebitCard {
 
-    private final double cashBackAmount = 0.05;
-    private final double cashBackPaymentLimit = 5000000;
-    private final double bonusAmount = 0.01;
-    private final double savingsAmount = 0.00005;
+    private double savingsAccount;
 
-    /**
-     * Метод для проведения платежа по дебетовой карте с бонусными опциями.
-     * Расширяет метод pay простой дебетовой карты за счет начисления кэшбэка и бонусов.
-     *
-     * @param amount - значение суммы платежа
-     * @return возвращает true в случае успешного списания средств
-     */
+    //поскольку бонусная программа будет касаться только пополнений, то переопределим метод fill
     @Override
-    public boolean pay(double amount) {
-        if (balance >= amount) {
-            balance -= amount;
-            System.out.println("Payment successful for " + amount);
-            cashingBack(amount, bonusAmount, cashBackAmount, cashBackPaymentLimit);
-            return true;
-        } else {
-            System.out.println("Payment failed");
+    public boolean fill(double amount) {
+        if (amount < 0) {
             return false;
         }
-    }
-
-    /**
-     * Метод для пополнения дебетовой карты с бонусными опциями.
-     * Переопределен от метода стандартной дебетовой карты.
-     *
-     * @param amount - значение суммы пополнения
-     * @return возвращает true в случае успешного пополнения
-     */
-    @Override
-    public boolean upBalance(double amount) {
-        if (amount > 0) {
-            balance = balance + amount;
-            System.out.println("Balance top up successfully for " + amount);
-            saving(amount, savingsAmount);
-            return true;
-        } else {
-            System.out.println("Up balance failed");
-            return false;
-        }
+        debitAccount += amount;
+        saving(amount);
+        return true;
     }
 
     @Override
-    public void showInfo() {
-        System.out.println("*** This is a Debit card with bonuses! ***" + "\nBalance: " + balance + "\nCashBack balance: " + cashBackBalance + "\nBonus balance: " + bonusBalance + "\nSaning balance: " + savingsBalance);
-
+    public String info() {
+        return "Balance: " + debitAccount + "\nSavings: " + savingsAccount;
     }
+
+
+    private void saving(double amount) {
+        savingsAccount = savingsAccount + amount * 0.00005;
+    }
+
+
 }
