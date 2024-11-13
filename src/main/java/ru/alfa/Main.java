@@ -30,15 +30,18 @@ public class Main {
         bonusDebitCard.pay(5000);
         System.out.println(bonusDebitCard.info());
         System.out.println("#######################");
-  ////////////////////
-BonusCreditCard bonusCreditCard = new BonusCreditCard();
-bonusCreditCard.setCreditAccount(50000000);
-bonusCreditCard.setCreditLimit(500000000);
-bonusCreditCard.setDebitAccount(5000000);
-bonusCreditCard.pay(50000);
-bonusCreditCard.fill(50000000);
-System.out.println(bonusCreditCard.info());
+        ////////////////////
+        BonusCreditCard bonusCreditCard = new BonusCreditCard();
+        bonusCreditCard.setCreditAccount(50000);
+        bonusCreditCard.setCreditLimit(50000);
+        bonusCreditCard.setDebitAccount(0);
+        bonusCreditCard.fill(5100000);
+        bonusCreditCard.pay(5000010);
+        bonusCreditCard.pay(50000);
+        bonusCreditCard.pay(50000);
 
+
+        System.out.println(bonusCreditCard.info());
 
 
     }

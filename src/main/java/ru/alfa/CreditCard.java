@@ -15,7 +15,7 @@ public class CreditCard extends BankCard {
         if (amount > creditLimit) {
             return false;
         }
-        creditAccount = debt(creditLimit,creditAccount) + amount;
+        creditAccount = debt(creditLimit, creditAccount) + amount;
         return true;
     }
 
@@ -34,12 +34,13 @@ public class CreditCard extends BankCard {
     //при нулевом лимите и отрицательном уровне кредитных средств тоже работает
     // (случай когда тебе банк больше не дает в долг, но ты еще должен ему)
     public boolean setDebitAccount(double amount) {
-        if (amount< 0||creditLimit>creditAccount ) {
+        if (amount < 0 || creditLimit > creditAccount) {
             return false;
         }
         debitAccount = amount;
         return true;
     }
+
     @Override
     //в этом методе нам нужно показать все доступные денежки, поскольку баланс это количество и тех и других
     public double getBalance() {
@@ -82,10 +83,11 @@ public class CreditCard extends BankCard {
 
     @Override
     public String info() {
-        return "Debit Account: " + debitAccount + "\nCredit Account: " + creditAccount+"\nFull balance"+getBalance();
+        return "Debit Account: " + debitAccount + "\nCredit Account: " + creditAccount + "\nFull balance: " + getBalance();
     }
-//считаем долги по кредиту чтобы не повторяться
-    private double debt(double creditLimit, double creditAccount){
+
+    //считаем долги по кредиту чтобы не повторяться
+    private double debt(double creditLimit, double creditAccount) {
         return creditLimit - creditAccount;
     }
 }

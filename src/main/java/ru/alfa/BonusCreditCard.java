@@ -18,7 +18,7 @@ public class BonusCreditCard extends CreditCard {
 
     @Override
     public String info() {
-        return super.info()+"\nBonus Account: " + bonusAccount + "\nCashBack: " + cashBackAccount;
+        return super.info() + "\nBonus Account: " + bonusAccount + "\nCashBack: " + cashBackAccount;
     }
 
     //можно конечно задавать значения в полях, но кажется у каждой бонусной программы будет своя логика
