@@ -6,24 +6,27 @@ public class CreditCard extends BankCard {
     protected double creditAccount;
     protected double creditLimit;
 
-    //если есть долг, то его нужно учесть при назначении нового значения кредитного счета,
-// но и больше лимита делать нельзя. Также банк моет установить нулевой лимит-логика продолжит работать
+    //Вообще про сеттеры сложно сказать однозначно, ТЗ не говорит нужны ли они. Можно использовать конструктор при создании карты,
+    //но я решил оставить сеттеры, вдруг сотрудникам нашего банка нужно будет делать ручные корректировки.
+
+    //Если есть долг, то его нужно учесть при назначении нового значения кредитного счета,
+// но и больше лимита делать нельзя. Также банк может установить нулевой лимит-логика продолжит работать
     public boolean setCreditAccount(double amount) {
         if (amount > creditLimit) {
             return false;
         }
-        creditAccount = (creditLimit - creditAccount) + amount;
+        creditAccount = debt(creditLimit,creditAccount) + amount;
         return true;
     }
 
     // если мы меняем лимит, то на такую же сумму должно меняться значение кредитного счета
     // при этом лимит может стать меньше долга и логика везде должна работать
-    public boolean setCreditLimit(double amount) {
-        if (creditLimit < 0) {
+    public boolean setCreditLimit(double creditLimit) {
+        if (this.creditLimit < 0) {
             return false;
         }
-        creditAccount = creditAccount + (amount - creditLimit);
-        creditLimit = amount;
+        this.creditAccount = this.creditAccount + (creditLimit - this.creditLimit);
+        this.creditLimit = creditLimit;
         return true;
     }
 
@@ -71,7 +74,7 @@ public class CreditCard extends BankCard {
 //если покрывает (даже если мы не тратили кредитные), то кидаем на дебетовый счет все что не скушал кредитный,
 //а кредитный становится равен лимиту
         else {
-            debitAccount = debitAccount + amount - (creditLimit - creditAccount);
+            debitAccount = debitAccount + amount - debt(creditLimit, creditAccount);
             creditAccount = creditLimit;
         }
         return true;
@@ -79,6 +82,10 @@ public class CreditCard extends BankCard {
 
     @Override
     public String info() {
-        return " Debit Account: " + debitAccount + " Credit Account: " + creditAccount;
+        return "Debit Account: " + debitAccount + "\nCredit Account: " + creditAccount+"\nFull balance"+getBalance();
+    }
+//считаем долги по кредиту чтобы не повторяться
+    private double debt(double creditLimit, double creditAccount){
+        return creditLimit - creditAccount;
     }
 }

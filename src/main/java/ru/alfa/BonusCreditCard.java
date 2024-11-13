@@ -1,31 +1,24 @@
 package ru.alfa;
 
 public class BonusCreditCard extends CreditCard {
-    //карта с бонусами и кэшбэком
+    //карта с бонусами и кэшбэком за покупки
     private double bonusAccount;
     private double cashBackAccount;
 
     @Override
     //переопределим только метод оплаты, поскольку две бонусные программы касаются только его
     public boolean pay(double amount) {
-        if (!canPay(amount)) {
-            return false;
-        }
-        if (debitAccount >= amount) {
-            debitAccount -= amount;
-            cashingBackFive(amount);
+        if (super.pay(amount)) {
             bonusingOne(amount);
+            cashingBackFive(amount);
             return true;
         }
-        creditAccount = getBalance() - amount;
-        cashingBackFive(amount);
-        bonusingOne(amount);
-        return true;
+        return false;
     }
 
     @Override
     public String info() {
-        return "Debit Account: " + debitAccount + "\nCredit Account: " + creditAccount + "\nBonus Account: " + bonusAccount + "\nCashBack: " + cashBackAccount;
+        return super.info()+"\nBonus Account: " + bonusAccount + "\nCashBack: " + cashBackAccount;
     }
 
     //можно конечно задавать значения в полях, но кажется у каждой бонусной программы будет своя логика

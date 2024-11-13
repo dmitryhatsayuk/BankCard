@@ -8,17 +8,16 @@ public class BonusDebitCard extends DebitCard {
     //поскольку бонусная программа будет касаться только пополнений, то переопределим метод fill
     @Override
     public boolean fill(double amount) {
-        if (amount < 0) {
-            return false;
+        if (super.fill(amount)){
+            saving(amount);
+            return true;
         }
-        debitAccount += amount;
-        saving(amount);
-        return true;
+        return false;
     }
 
     @Override
     public String info() {
-        return "Balance: " + debitAccount + "\nSavings: " + savingsAccount;
+        return super.info()+ "\nSavings: " + savingsAccount;
     }
 
 
